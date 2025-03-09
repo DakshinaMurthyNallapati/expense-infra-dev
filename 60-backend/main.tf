@@ -11,3 +11,30 @@ resource "aws_instance" "backend" {
   )
  
 }
+
+resource "null_resource" "backend" {
+  # Changes to any instance of the instance requires re-provisioning
+  triggers = {
+    instance_id = aws_instance.backend.id
+  }
+
+  connection {
+    host = aws_instance.backend.private_ip
+    type = "ssh"
+    user = "ec2-user"
+    password = "DevOps321"
+  }
+
+  provisioner "file" {
+    source = "backend.sh"
+    destination = "/tmp/backend.sh"
+  
+}
+  provisioner "remote-exec" {
+    # Bootstrap script called with private_ip of each node in the cluster
+    inline = [
+      "chmod +x /tmp/backend.sh",
+      "sudo sh /tmp/backend.sh ${var.environment}"
+    ]
+  }
+}
