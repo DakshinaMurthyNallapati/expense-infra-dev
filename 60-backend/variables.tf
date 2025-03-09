@@ -8,6 +8,10 @@ variable "environment" {
     default = "dev"
   
 }
+
+variable "domain_name" {
+    default = "dakshina.cloud"
+}
 variable "common_tags" {
     default = {
         Project = "expense"
@@ -16,3 +20,4 @@ variable "common_tags" {
     }
   
 }
+
