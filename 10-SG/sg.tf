@@ -60,6 +60,16 @@ module "app_alb_sg" {
     common_tags = var.common_tags
 }
 
+module "web_alb_sg" {
+    source = "git::https://github.com/DakshinaMurthyNallapati/terraform-aws-securitygroup.git?ref=main"
+    project_name = var.project_name
+    environment = var.environment
+    sg_name = "web-alb"
+    sg_description = "Created for frontend alb for expense dev"
+    vpc_id = data.aws_ssm_parameter.vpc_id.value
+    common_tags = var.common_tags
+}
+
 #Application tier ALB accepting traffic from basition host
 resource "aws_security_group_rule" "app_alb_bastion" {
   type              = "ingress"
@@ -177,5 +187,14 @@ resource "aws_security_group_rule" "mysql_backend" {
   protocol          = "tcp"
   source_security_group_id = module.backend_sg.sg_id
   security_group_id = module.mysql_sg.sg_id
+}
+
+resource "aws_security_group_rule" "web_alb_https" {
+  type              = "ingress"
+  from_port         = 443
+  to_port           = 443
+  protocol          = "tcp"
+  cidr_blocks = ["0.0.0.0/0"]
+  security_group_id = module.web_alb_sg.sg_id
 }
 

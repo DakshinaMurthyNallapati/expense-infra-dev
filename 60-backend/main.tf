@@ -57,6 +57,10 @@ resource "aws_ami_from_instance" "backend" {
 
 resource "null_resource" "backend_delete" {
 
+  triggers = {
+    instance_id = aws_instance.backend.id
+  }
+
   provisioner "local-exec" {
     command = "aws ec2 terminate-instances --instance-ids ${aws_instance.backend.id}"
   }
@@ -130,7 +134,6 @@ resource "aws_autoscaling_group" "backend" {
     }
     triggers = ["launch_template"]
   }
-
 
   tag {
     key                 = "Name"
